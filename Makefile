@@ -6,4 +6,12 @@ build:
 test:
 	node_modules/.bin/qunit -c cyclic:./index.js -t ./test/index.js --cov
 
-.PHONY: build test
+push:
+	git push origin master
+	git push origin master:gh-pages
+	git push --tags
+
+publish: push
+	npm pu
+
+.PHONY: build push publish test
