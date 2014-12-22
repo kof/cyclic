@@ -1,36 +1,36 @@
 {
-  name: 'cyclic',
-  description: 'Base api to create data bindings without cyclic issues.',
-  version: '0.1.0',
-  author: {
-    name: 'Oleg Slobodskoi',
-    email: 'oleg008@gmail.com'
-  },
-  repository: {
-    type: 'git',
-    url: 'git@github.com:kof/cyclic.git'
-  },
-  keywords: ['data', 'binding', 'cyclic', 'graph', 'linking'],
-  engines: {},
-  scripts: {},
-  licenses: [
-    {
-      type: 'MIT',
-      url: 'http://www.opensource.org/licenses/mit-license.php'
+    name: 'cyclic',
+    description: 'Base api to create data bindings without cyclic issues.',
+    version: '0.1.0',
+    author: {
+        name: 'Oleg Slobodskoi',
+        email: 'oleg008@gmail.com'
+    },
+    repository: {
+        type: 'git',
+        url: 'git@github.com:kof/cyclic.git'
+    },
+    keywords: ['data', 'binding', 'cyclic', 'graph', 'linking'],
+    engines: {},
+    scripts: {},
+    licenses: [
+        {
+            type: 'MIT',
+            url: 'http://www.opensource.org/licenses/mit-license.php'
+        }
+    ],
+    dependencies: {
+        'component-emitter': '1.1.x'
+    },
+    overlay: {
+        bower: true,
+        npm: {
+            devDependencies: {
+                browserify: '7.0.x',
+                qunit: '0.7.x',
+                'uglify-js': '2.4.x',
+                xpkg: '0.2.x'
+            }
+        }
     }
-  ],
-  dependencies: {
-    'component-emitter': '1.1.x'
-  },
-  overlay: {
-    bower: true,
-    npm: {
-      devDependencies: {
-        browserify: '7.0.x',
-        qunit: '0.7.x',
-        'uglify-js': '2.4.x',
-        xpkg: '0.2.x'
-      }
-    }
-  }
 }

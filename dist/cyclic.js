@@ -7,12 +7,26 @@ exports.Cycle = require('./lib/cycle')
 },{"./lib/cycle":2,"./lib/model":3}],2:[function(require,module,exports){
 'use strict'
 
+/**
+ * Cycle class controls models and applies changes.
+ * Usually you want to have just one instance within your application which will
+ * be in charge of all models.
+ *
+ * @api public
+ */
 function Cycle() {
     this.models = {}
 }
 
 module.exports = Cycle
 
+/**
+ * Add a model to the cycle.
+ *
+ * @param {Model} model
+ * @return {Cycle}
+ * @api public
+ */
 Cycle.prototype.add = function (model) {
     this.models[model.id] = model
 
@@ -20,8 +34,8 @@ Cycle.prototype.add = function (model) {
 }
 
 /**
- * Run call might be expensive, so we iterate only over models which has really
- * changed.
+ * Run call might be expensive, so we iterate only over models which has changed.
+ * You might want to call `run` on every requestAnimationFrame.
  *
  * @return {Cycle}
  * @api public
@@ -42,20 +56,43 @@ var Emitter = require('component-emitter')
 
 var uid = 0
 
+/**
+ * Model constructor for objects which can be potentially cyclic.
+ *
+ * @param {Object} [attributes]
+ * @api public
+ */
 function Model(attributes) {
     this.id = ++uid
-    this.attributes = attributes
+    this.attributes = attributes || {}
     this.changed = {}
+    // Is true when there are changes to be applied to attributes.
     this.isDirty = false
 }
 
 Emitter(Model.prototype)
 module.exports = Model
 
+/**
+ * Get attribute value.
+ *
+ * @param {String} name
+ * @return {Mixed}
+ * @api public
+ */
 Model.prototype.get = function (name) {
     return this.attributes[name]
 }
 
+/**
+ * Schedule attribute value change. Value is applied once .apply method is called.
+ * This allows us to avoid cyclic dependencies.
+ *
+ * @param {String} name
+ * @param {Mixed} value
+ * @return {Model}
+ * @api public
+ */
 Model.prototype.set = function (name, value) {
     if (this.attributes[name] === value) return this
     this.changed[name] = value
@@ -74,6 +111,12 @@ Model.prototype.toJSON = function () {
     return this.attributes
 }
 
+/**
+ * Apply changes to attributes, emit "change" events.
+ *
+ * @return {Model}
+ * @api private
+ */
 Model.prototype.apply = function () {
     for (var name in this.changed) {
         var value = this.changed[name]
