@@ -59,6 +59,10 @@ Model.prototype.set = function (name, value) {
     return this
 }
 
+Model.prototype.get = function (name) {
+    return this.object[name]
+}
+
 Model.prototype.apply = function (isCyclic) {
     for (var name in this.changed) {
         var newValue = this.changed[name]
