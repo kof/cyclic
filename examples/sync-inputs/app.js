@@ -1,14 +1,22 @@
 (function () {
     var inputs = document.getElementsByTagName('input')
 
+    function bindModels(model1, model2) {
+        // Create model>mainModel binding.
+        model1.on('change:value', function (value) {
+            model2.set('value', value)
+        })
+
+        return bindModels
+    }
+
     function bindDom(input, mainModel) {
         // Represents the state of an input.
         var model = new cyclic.Model()
 
         // Create model>dom binding.
         model.on('change:value', function (value) {
-            input.value = value
-            mainModel.set('value', value)
+            if (input.value != value) input.value = value
         })
         // Create dom>model binding.
         input.addEventListener('keydown', function () {
@@ -17,11 +25,7 @@
             })
         })
 
-        // Create mainModel>model binding.
-        mainModel.on('change:value', function (value) {
-            model.set('value', value)
-        })
-
+        bindModels(model, mainModel)(mainModel, model)
         return model
     }
 
