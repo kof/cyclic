@@ -51,7 +51,7 @@ var cyclic = window.cyclic
 
 ### Model class.
 
-`new cyclic.Model([object])`
+`cyclic.Model([object])`
 
 In order to create a data binding we need to wrap a plain object into the model.
 I intentionally avoid `Object.observe` and its shims because of performance issues, as I want to be able to create thousands of bindings.
@@ -95,6 +95,25 @@ model.on('change:myAttr', function (value) {
     console.log(value) // new value
 })
 ```
+### Cycle class.
+
+`cyclic.Cycle()`
+
+```javascript
+var cycle = new cyclic.Cycle()
+```
+
+### Add a model.
+
+`cycle.add(model)`
+
+Add a model to the cycle to let it apply changes when `.run()` is called.
+
+### Run the cycle.
+
+`cycle.run()`
+
+Will apply changes on all models. You might want to call it in animation frame.
 
 ## License
 
