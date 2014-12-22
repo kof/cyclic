@@ -8,15 +8,15 @@ var model1 = new cyclic.Model({a: 1})
 var model2 = new cyclic.Model({b: 2})
 var model3 = new cyclic.Model({c: 3})
 
-model1.on('a', function (value) {
+model1.on('change:a', function (value) {
     model2.set('b', value + 1)
 })
 
-model2.on('b', function (value) {
+model2.on('change:b', function (value) {
     model3.set('c', value + 1)
 })
 
-model3.on('c', function (value) {
+model3.on('change:c', function (value) {
     model1.set('a', 2)
 })
 
