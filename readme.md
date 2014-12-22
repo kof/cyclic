@@ -1,6 +1,6 @@
 ## Cyclic
 
-This component provides an api to create a single or bidirectional pure object based data binding and to avoid cyclic dependencies.
+This component allows you to create a single or bidirectional data binding between any kind of objects and to avoid cyclic dependencies.
 
 This api is low level and hence verbose. You might want to create a nice declarative lib using this api and so will I.
 
