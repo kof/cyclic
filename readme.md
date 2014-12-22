@@ -10,6 +10,12 @@ This api is low level and hence verbose. You might want to create a nice declara
 var model1 = new cyclic.Model({a: 1})
 var model2 = new cyclic.Model({a: 1})
 
+// Create a cycle which will control the models
+var cycle = new cyclic.Cycle()
+cycle
+    .add(model1)
+    .add(model2)
+
 // Bind value model1.a > model2.a
 model1.on('change:a', function (value) {
     model2.set('a', value)
@@ -20,11 +26,6 @@ model2.on('change:a', function (value) {
     model1.set('a', value)
 })
 
-// Create a cycle which will control the models
-var cycle = new cyclic.Cycle()
-cycle
-    .add(model1)
-    .add(model2)
 
 // Set model1.a to 2
 model1.set('a', 2)
