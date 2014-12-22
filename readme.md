@@ -35,7 +35,6 @@ cycle.run()
 // Both models are in sync.
 model1.get('a') // 2
 model2.get('a') // 2
-
 ```
 
 ## API
@@ -43,13 +42,11 @@ model2.get('a') // 2
 ### Access the lib.
 
 ```javascript
+// Commonjs
+var cyclic = require('cyclic')
 
-    // Commonjs
-    var cyclic = require('cyclic')
-
-    // Globals
-    var cyclic = window.cyclic
-
+// Globals
+var cyclic = window.cyclic
 ```
 
 ### Model class.
@@ -60,7 +57,7 @@ In order to create a data binding we need to wrap a plain object into the model.
 I intentionally avoid `Object.observe` and its shims because of performance issues, as I want to be able to create thousands of bindings.
 
 ```javascript
-    var model = new cyclic.Model({myAttr: 123})
+var model = new cyclic.Model({myAttr: 123})
 ```
 
 ### Get attribute value.
@@ -87,14 +84,13 @@ model.set('myAttr', 123)
 
 ```javascript
 model.toJSON() // {myAttr: 123}
-
+```
 
 ### Listen to "change:{name}" events.
 
 Model inherits from [Emitter](https://github.com/component/emitter). You can call all methods defined there. Event name is "change:" plus attributes name.
 
 ```javascript
-
 model.on('change:myAttr', function (value) {
     console.log(value) // new value
 })
