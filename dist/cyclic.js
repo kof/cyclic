@@ -8,34 +8,32 @@ exports.Cycle = require('./lib/cycle')
 'use strict'
 
 function Cycle() {
-    this.models = []
+    this.models = {}
 }
 
 module.exports = Cycle
 
 Cycle.prototype.add = function (model) {
-    this.models.push(model)
+    this.models[model.id] = model
 
     return this
 }
 
+/**
+ * Run call might be expensive, so we iterate only over models which has really
+ * changed.
+ *
+ * @return {Cycle}
+ * @api public
+ */
 Cycle.prototype.run = function () {
-    var changed = {}
-
-    function isCyclic(id, name) {
-        var name = id + name
-        if (changed[name]) return true
-        changed[name] = true
-        return false
+    for (var id in this.models) {
+        var model = this.models[id]
+        if (model.isDirty) model.apply()
     }
 
-    this.models.forEach(function (model) {
-        model.apply(isCyclic)
-    })
-
     return this
 }
-
 
 },{}],3:[function(require,module,exports){
 'use strict'
@@ -44,35 +42,47 @@ var Emitter = require('component-emitter')
 
 var uid = 0
 
-function Model(object) {
+function Model(attributes) {
     this.id = ++uid
-    this.object = object
+    this.attributes = attributes
     this.changed = {}
+    this.isDirty = false
 }
 
 Emitter(Model.prototype)
 module.exports = Model
 
+Model.prototype.get = function (name) {
+    return this.attributes[name]
+}
+
 Model.prototype.set = function (name, value) {
+    if (this.attributes[name] === value) return this
     this.changed[name] = value
+    this.isDirty = true
 
     return this
 }
 
-Model.prototype.get = function (name) {
-    return this.object[name]
+/**
+ * In case model gets serialized by JSON.stringify or just as an object getter.
+ *
+ * @return {Object}
+ * @api public
+ */
+Model.prototype.toJSON = function () {
+    return this.attributes
 }
 
-Model.prototype.apply = function (isCyclic) {
+Model.prototype.apply = function () {
     for (var name in this.changed) {
-        var newValue = this.changed[name]
-        var currValue = this.object[name]
-        if (currValue === newValue || isCyclic(this.id, name)) continue
-        this.object[name] = newValue
-        this.emit(name, newValue)
+        var value = this.changed[name]
+        this.attributes[name] = value
+        this.emit('change:' + name, value)
     }
 
     this.changed = {}
+    this.isDirty = false
 
     return this
 }
