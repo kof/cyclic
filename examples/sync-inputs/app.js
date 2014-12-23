@@ -5,46 +5,49 @@
     var cycle = new cyclic.Cycle()
     setInterval(cycle.run.bind(cycle), 10)
 
-    // Main sync model, represents the common model.
-    var model = new cyclic.Model()
-    cycle.add(model)
+    // Main sync model, represents the common state.
+    var mainModel = new cyclic.Model()
+    cycle.add(mainModel)
 
     // Models representing each input.
     var models = inputs.map(function (input) {
         var model = new cyclic.Model({element: input})
+        cycle.add(model)
+
         // Create model>dom binding.
         model.on('change:value', function (value) {
             input.value = value
         })
-        cycle.add(model)
+
+        // Create mainModel>model binding to get notified when main model changes.
+        mainModel.on('change:value', function (value) {
+            model.set('value', value)
+        })
+
         return model
     })
 
-    // Create dom>model binding.
+    // Create dom>model binding with basic event delegation.
     window.addEventListener('keydown', function (e) {
         var element = e.target
 
-        // Find the model responsible for the current element.
-        var currModel = models.filter(function (model) {
-            return model.get('element') === element
-        })[0]
+        if (element.nodeName != 'INPUT') return
 
         setTimeout(function () {
             var value = element.value
+
             // Notify current model silently to avoid current element gets
             // .value assigned again.
-            currModel.set('value', value, true)
-            model.set('value', value)
-        })
-    })
+            models.forEach(function (model) {
+                if (model.get('element') === element) {
+                    model.set('value', value, true)
+                }
+            })
 
-    // Notify state models if main model has changed.
-    model.on('change:value', function (value) {
-        models.forEach(function (model) {
-            model.set('value', value)
+            mainModel.set('value', value)
         })
     })
 
     // Set initial value
-    model.set('value', 'edit me!')
+    mainModel.set('value', 'edit me!')
 }())
