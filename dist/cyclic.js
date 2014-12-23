@@ -90,11 +90,16 @@ Model.prototype.get = function (name) {
  *
  * @param {String} name
  * @param {Mixed} value
+ * @param {Boolean} [silent] will set the attribute directly with no schedule and no event
  * @return {Model}
  * @api public
  */
-Model.prototype.set = function (name, value) {
-    if (this.attributes[name] === value) return this
+Model.prototype.set = function (name, value, silent) {
+    if (silent || this.attributes[name] === value) {
+        this.attributes[name] = value
+        return this
+    }
+
     this.changed[name] = value
     this.isDirty = true
 

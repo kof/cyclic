@@ -73,9 +73,11 @@ model.get('myAttr') // current value
 
 ### Set attribute value.
 
-`model.set(name, value)`
+`model.set(name, value, [silent])`
 
-Schedule attribute value change. Value is applied once .apply method is called. This allows us to avoid cyclic dependencies.
+Schedule attribute value change. Value is applied when `.apply` method is called. This allows us to avoid cyclic dependencies.
+
+If `silent` is `true` the model gets modified without to schedule the change or trigger events.
 
 ```javascript
 model.set('myAttr', 123)

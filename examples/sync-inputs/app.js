@@ -1,45 +1,50 @@
 (function () {
-    var inputs = document.getElementsByTagName('input')
-
-    function bindModels(model1, model2) {
-        // Create model>mainModel binding.
-        model1.on('change:value', function (value) {
-            model2.set('value', value)
-        })
-
-        return bindModels
-    }
-
-    function bindDom(input, mainModel) {
-        // Represents the state of an input.
-        var model = new cyclic.Model()
-
-        // Create model>dom binding.
-        model.on('change:value', function (value) {
-            if (input.value != value) input.value = value
-        })
-        // Create dom>model binding.
-        input.addEventListener('keydown', function () {
-            setTimeout(function () {
-                model.set('value', input.value)
-            })
-        })
-
-        bindModels(model, mainModel)(mainModel, model)
-        return model
-    }
-
-    var mainModel = new cyclic.Model()
-
-    var model0 = bindDom(inputs[0], mainModel)
-    var model1 = bindDom(inputs[1], mainModel)
-    var model2 = bindDom(inputs[2], mainModel)
-
-    // Set initial value
-    mainModel.set('value', 'edit me!')
+    var toArray = Array.prototype.slice
+    var inputs = toArray.call(document.getElementsByTagName('input'))
 
     var cycle = new cyclic.Cycle()
-    cycle.add(mainModel).add(model0).add(model1).add(model2)
-
     setInterval(cycle.run.bind(cycle), 10)
+
+    // Main sync model, represents the common model.
+    var model = new cyclic.Model()
+    cycle.add(model)
+
+    // Models representing each input.
+    var models = inputs.map(function (input) {
+        var model = new cyclic.Model({element: input})
+        // Create model>dom binding.
+        model.on('change:value', function (value) {
+            input.value = value
+        })
+        cycle.add(model)
+        return model
+    })
+
+    // Create dom>model binding.
+    window.addEventListener('keydown', function (e) {
+        var element = e.target
+
+        // Find the model responsible for the current element.
+        var currModel = models.filter(function (model) {
+            return model.get('element') === element
+        })[0]
+
+        setTimeout(function () {
+            var value = element.value
+            // Notify current model silently to avoid current element gets
+            // .value assigned again.
+            currModel.set('value', value, true)
+            model.set('value', value)
+        })
+    })
+
+    // Notify state models if main model has changed.
+    model.on('change:value', function (value) {
+        models.forEach(function (model) {
+            model.set('value', value)
+        })
+    })
+
+    // Set initial value
+    model.set('value', 'edit me!')
 }())
