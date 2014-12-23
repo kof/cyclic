@@ -126,7 +126,7 @@ Model.prototype.apply = function () {
     for (var name in this.changed) {
         var value = this.changed[name]
         this.attributes[name] = value
-        this.emit('change:' + name, value)
+        this.emit('change:' + name, value, this)
     }
 
     this.changed = {}

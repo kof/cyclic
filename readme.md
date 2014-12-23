@@ -1,8 +1,7 @@
 ## Cyclic
 
-This component allows you to create a single or bidirectional data binding between any kind of objects and to avoid cyclic dependencies.
-
-This api is low level and hence verbose. You might want to create a nice declarative lib using this api and so will I.
+Cyclic is a low level api for creating single or bidirectional bindings between any kind of objects. It schedules the changes
+during one cycle to avoid cyclic dependencies and multi change overhead.
 
 Take a look at [examples](http://kof.github.io/cyclic/examples/index.html) directory.
 
@@ -96,7 +95,7 @@ model.toJSON() // {myAttr: 123}
 Model inherits from [Emitter](https://github.com/component/emitter). You can call all methods defined there. Event name is "change:" plus attributes name.
 
 ```javascript
-model.on('change:myAttr', function (value) {
+model.on('change:myAttr', function (value, model) {
     console.log(value) // new value
 })
 ```
