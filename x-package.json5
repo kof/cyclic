@@ -1,6 +1,6 @@
 {
     name: 'cyclic',
-    description: 'Base api to create data bindings without cyclic issues.',
+    description: 'Cyclic is a low level api for creating single or bidirectional bindings between any kind of objects.',
     version: '0.1.2',
     author: {
         name: 'Oleg Slobodskoi',
