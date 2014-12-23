@@ -1,5 +1,7 @@
 ## Cyclic
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/kof/cyclic?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Cyclic is a low level api for creating single or bidirectional bindings between any kind of objects. It schedules the changes
 during one cycle to avoid cyclic dependencies and multi change overhead.
 
