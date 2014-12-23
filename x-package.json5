@@ -1,7 +1,7 @@
 {
     name: 'cyclic',
     description: 'Base api to create data bindings without cyclic issues.',
-    version: '0.1.1',
+    version: '0.1.2',
     author: {
         name: 'Oleg Slobodskoi',
         email: 'oleg008@gmail.com'
