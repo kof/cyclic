@@ -2,9 +2,126 @@
 'use strict'
 
 exports.Model = require('./lib/model')
+exports.Binding = require('./lib/Binding')
 exports.Cycle = require('./lib/cycle')
 
-},{"./lib/cycle":2,"./lib/model":3}],2:[function(require,module,exports){
+var cycle = new exports.Cycle()
+
+exports.run = cycle.run.bind(cycle)
+
+exports.bind = function (object, prop) {
+    return exports.Binding.create(cycle, object, prop)
+}
+
+},{"./lib/Binding":2,"./lib/cycle":3,"./lib/model":4}],2:[function(require,module,exports){
+'use strict'
+
+var Model = require('./model')
+
+var objects = []
+var bindingsMap = {}
+var modelsMap = {}
+
+/**
+ * Binding contructor.
+ *
+ * @param {Cycle} cycle
+ * @param {Model} model
+ * @param {String} prop
+ * @api private
+ */
+function Binding(cycle, model, prop) {
+    this.cycle = cycle
+    this.model = model
+    this.prop = prop
+}
+
+module.exports = Binding
+
+/**
+ * Create a Binding instance.
+ *
+ * @param {Cycle} cycle
+ * @param {Object} object
+ * @param {String} prop
+ * @return {Binding}
+ * @api public
+ */
+Binding.create = function (cycle, object, prop) {
+    var objectIndex = objects.indexOf(object)
+    var binding
+
+    if (objectIndex >= 0) {
+        binding = bindingsMap[objectIndex][prop]
+    }
+
+    if (binding) return binding
+
+    var model
+    if (objectIndex >= 0) {
+        model = modelsMap[objectIndex]
+    }
+
+    if (objectIndex == -1) {
+        objects.push(object)
+        objectIndex = objects.length - 1
+    }
+
+    if (!model) {
+        model = new Model()
+        modelsMap[objectIndex] = model
+        cycle.add(model)
+        Binding.defineProperty(object, prop, model)
+    }
+
+    binding = new Binding(cycle, model, prop)
+    bindingsMap[objectIndex] = binding
+
+    return binding
+}
+
+/**
+ * Create getter/setter connected to the model.
+ *
+ * @param {Object} object
+ * @param {String} prop
+ * @param {Model} model
+ * @api private
+ */
+Binding.defineProperty = function (object, prop, model) {
+    model.set(prop, object[prop])
+    Object.defineProperty(object, prop, {
+        enumerable: true,
+        get: function () {
+            return model.get(prop)
+        },
+        set: function (value) {
+            model.set(prop, value)
+        }
+    })
+}
+
+/**
+ * Bind current object to some other one.
+ *
+ * @param {Object} object
+ * @param {String} prop
+ * @param {Object} [options]
+ * @api public
+ */
+Binding.prototype.to = function (object, prop, options) {
+    var binding = Binding.create(this.cycle, object, prop)
+    options || (options = {})
+
+    this.model.on('change:' + this.prop, function (value) {
+        binding.model.set(prop, value)
+        if (options.changed) options.changed(value)
+    })
+
+    return binding
+}
+
+},{"./model":4}],3:[function(require,module,exports){
 'use strict'
 
 /**
@@ -49,7 +166,7 @@ Cycle.prototype.run = function () {
     return this
 }
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 'use strict'
 
 var Emitter = require('component-emitter')
@@ -59,14 +176,14 @@ var uid = 0
 /**
  * Model constructor for objects which can be potentially cyclic.
  *
- * @param {Object} [attributes]
+ * @param {Object} [object]
  * @api public
  */
-function Model(attributes) {
+function Model(object) {
     this.id = ++uid
-    this.attributes = attributes || {}
+    this.object = object || {}
     this.changed = {}
-    // Is true when there are changes to be applied to attributes.
+    // Is true when there are changes to be applied to object.
     this.isDirty = false
 }
 
@@ -81,7 +198,7 @@ module.exports = Model
  * @api public
  */
 Model.prototype.get = function (name) {
-    return this.attributes[name]
+    return this.object[name]
 }
 
 /**
@@ -95,8 +212,8 @@ Model.prototype.get = function (name) {
  * @api public
  */
 Model.prototype.set = function (name, value, silent) {
-    if (silent || this.attributes[name] === value) {
-        this.attributes[name] = value
+    if (silent || this.object[name] === value) {
+        this.object[name] = value
         return this
     }
 
@@ -113,11 +230,11 @@ Model.prototype.set = function (name, value, silent) {
  * @api public
  */
 Model.prototype.toJSON = function () {
-    return this.attributes
+    return this.object
 }
 
 /**
- * Apply changes to attributes, emit "change" events.
+ * Apply changes to object, emit "change" events.
  *
  * @return {Model}
  * @api private
@@ -125,7 +242,7 @@ Model.prototype.toJSON = function () {
 Model.prototype.apply = function () {
     for (var name in this.changed) {
         var value = this.changed[name]
-        this.attributes[name] = value
+        this.object[name] = value
         this.emit('change:' + name, value, this)
     }
 
@@ -135,7 +252,7 @@ Model.prototype.apply = function () {
     return this
 }
 
-},{"component-emitter":4}],4:[function(require,module,exports){
+},{"component-emitter":5}],5:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.

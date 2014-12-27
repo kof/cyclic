@@ -2,43 +2,27 @@
     var toArray = Array.prototype.slice
     var inputs = toArray.call(document.getElementsByTagName('input'))
 
-    var cycle = new cyclic.Cycle()
-    setInterval(cycle.run.bind(cycle), 10)
+    var mainModel = {value: 'edit me!'}
 
-    // Main sync model, represents the common state.
-    var mainModel = new cyclic.Model()
-    cycle.add(mainModel)
+    inputs.forEach(function (element) {
+        var model = {}
 
-    function bind(element) {
-        var model = new cyclic.Model({element: element})
-
-        cycle.add(model)
-
-        // Create model>dom binding.
-        model.on('change:value', function (value) {
-            if (element.value != value) element.value = value
-        })
+        cyclic
+            .bind(mainModel, 'value')
+            .to(model, 'value', {
+                changed: function (value) {
+                    if (element.value != value) element.value = value
+                }
+            })
+            .to(mainModel, 'value')
 
         // Create dom>model binding.
         element.addEventListener('keydown', function (e) {
             setTimeout(function () {
-                model.set('value', e.target.value)
+                model.value = e.target.value
             })
         })
+    })
 
-        // Create mainModel>model binding to get notified when main model changes.
-        mainModel.on('change:value', function (value) {
-            model.set('value', value)
-        })
-
-        // Create model>mainModel binding
-        model.on('change:value', function (value) {
-            mainModel.set('value', value)
-        })
-    }
-
-    inputs.forEach(bind)
-
-    // Set initial value
-    mainModel.set('value', 'edit me!')
+    setInterval(cyclic.run, 10)
 }())

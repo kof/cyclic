@@ -94,7 +94,7 @@ model.toJSON() // {myAttr: 123}
 
 ### Listen to "change:{name}" events.
 
-Model inherits from [Emitter](https://github.com/component/emitter). You can call all methods defined there. Event name is "change:" plus attributes name.
+Model inherits from [Emitter](https://github.com/component/emitter). You can call all methods defined there. Event name is "change:" plus property name.
 
 ```javascript
 model.on('change:myAttr', function (value, model) {
