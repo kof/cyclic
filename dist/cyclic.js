@@ -1,19 +1,9 @@
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.cyclic=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict'
 
-exports.Model = require('./lib/model')
-exports.Binding = require('./lib/Binding')
-exports.Cycle = require('./lib/cycle')
+module.exports = require('./lib')
 
-var cycle = new exports.Cycle()
-
-exports.run = cycle.run.bind(cycle)
-
-exports.bind = function (object, prop) {
-    return exports.Binding.create(cycle, object, prop)
-}
-
-},{"./lib/Binding":2,"./lib/cycle":3,"./lib/model":4}],2:[function(require,module,exports){
+},{"./lib":4}],2:[function(require,module,exports){
 'use strict'
 
 var Model = require('./model')
@@ -89,6 +79,7 @@ Binding.create = function (cycle, object, prop) {
  * @api private
  */
 Binding.defineProperty = function (object, prop, model) {
+    // Don't loose the value if already defined.
     model.set(prop, object[prop])
     Object.defineProperty(object, prop, {
         enumerable: true,
@@ -126,7 +117,7 @@ Binding.prototype.to = function (object, prop, options) {
     return binding
 }
 
-},{"./model":4}],3:[function(require,module,exports){
+},{"./model":5}],3:[function(require,module,exports){
 'use strict'
 
 /**
@@ -172,6 +163,35 @@ Cycle.prototype.run = function () {
 }
 
 },{}],4:[function(require,module,exports){
+'use strict'
+
+exports.Model = require('./model')
+exports.Binding = require('./Binding')
+exports.Cycle = require('./cycle')
+
+var cycle = new exports.Cycle()
+
+/**
+ * Run the cycle.
+ *
+ * @return {Cycle}
+ * @api public
+ */
+exports.run = cycle.run.bind(cycle)
+
+/**
+ * Create a binding.
+ *
+ * @param {Object} object
+ * @param {String} prop
+ * @return {Binding}
+ * @api public
+ */
+exports.bind = function (object, prop) {
+    return exports.Binding.create(cycle, object, prop)
+}
+
+},{"./Binding":2,"./cycle":3,"./model":5}],5:[function(require,module,exports){
 'use strict'
 
 var Emitter = require('component-emitter')
@@ -257,7 +277,7 @@ Model.prototype.apply = function () {
     return this
 }
 
-},{"component-emitter":5}],5:[function(require,module,exports){
+},{"component-emitter":6}],6:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.

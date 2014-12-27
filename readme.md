@@ -10,35 +10,24 @@ Take a look at [examples](http://kof.github.io/cyclic/examples/index.html) direc
 ## Two way data binding example.
 
 ```javascript
-var model1 = new cyclic.Model({a: 1})
-var model2 = new cyclic.Model({a: 1})
+// Global setup.
+(function run() {
+    cyclic.run()
+    requestAnimationFrame(run)
+}())
 
-// Create a cycle which will control the models
-var cycle = new cyclic.Cycle()
-cycle
-    .add(model1)
-    .add(model2)
+// 2 random objects.
+var object1 = {a: 1}
+var object2 = {a: 1}
 
-// Bind value model1.a > model2.a
-model1.on('change:a', function (value) {
-    model2.set('a', value)
-})
+// Create the binding.
+cyclic.bind(object1, 'a').to(object2, 'a').to(object1, 'a')
 
-// Bind value model2.a > model1.a
-model2.on('change:a', function (value) {
-    model1.set('a', value)
-})
-
-
-// Set model1.a to 2
-model1.set('a', 2)
-
-// Run the cycle (you might want to do it within animation frame)
-cycle.run()
+object1.a = 2
 
 // Both models are in sync.
-model1.get('a') // 2
-model2.get('a') // 2
+object1.a // 2
+object2.a // 2
 ```
 
 ## API
@@ -52,6 +41,34 @@ var cyclic = require('cyclic')
 // Globals
 var cyclic = window.cyclic
 ```
+
+### Run.
+
+You need to start the loop once manually. You can choose between running it within requestAnimationFrame (recommended) or using different technics.
+
+```javascript
+(function run() {
+    cyclic.run()
+    requestAnimationFrame(run)
+}())
+```
+
+### Create binding.
+
+`cyclic.bind(object, property)`
+
+In the most cases you don't need to use `Model` or `Cycle` classes directly. They are used by a higher level abstraction - `Binding`, `cyclic.bind` returns `Binding` instance.
+
+### Bind to.
+
+`Binding#to(object, property, [options])`
+
+Pass the object/property you want to bind to.
+Options:
+  - `transform` returned value will be applied, gets a value as a param
+  - `changed` callback with new value as a param
+
+[See example](./examples/transform/app.js)
 
 ### Model class.
 
