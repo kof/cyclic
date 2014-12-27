@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Transform example</title>
+        <style>
+            .output-1, .output-2 {
+                width: 50px;
+                height: 22px;
+                border: 1px solid green;
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <input type="range"/>
+        <div class="output-1"></div>
+        <div class="output-2"></div>
+
+        <pre>
+                Graph schema
+
+                    input
+                      |
+                  inputModel
+                  |       |
+        outputModel1     outputModel2
+              |                 |
+        outputElement1   outputElement2
+
+        </pre>
+        <script src="../../dist/cyclic.js"></script>
+        <script src="./app.js"></script>
+    </body>
+</html>

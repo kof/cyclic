@@ -104,16 +104,21 @@ Binding.defineProperty = function (object, prop, model) {
 /**
  * Bind current object to some other one.
  *
+ * Options:
+ *   - `transform` returned value will be applied, gets a value as a param
+ *   - `changed` callback with new value as a param
+ *
  * @param {Object} object
  * @param {String} prop
  * @param {Object} [options]
  * @api public
  */
 Binding.prototype.to = function (object, prop, options) {
-    var binding = Binding.create(this.cycle, object, prop)
     options || (options = {})
+    var binding = Binding.create(this.cycle, object, prop)
 
     this.model.on('change:' + this.prop, function (value) {
+        if (options.transform) value = options.transform(value)
         binding.model.set(prop, value)
         if (options.changed) options.changed(value)
     })
