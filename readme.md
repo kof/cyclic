@@ -2,7 +2,7 @@
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/kof/cyclic?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Cyclic is a low level api for creating single or bidirectional bindings between any kind of objects. It schedules the changes
+Cyclic is an api for creating single or bidirectional bindings between any kind of objects. It schedules the changes
 during one cycle to avoid cyclic dependencies and multi change overhead.
 
 Take a look at [examples](http://kof.github.io/cyclic/examples/index.html) directory.
@@ -64,9 +64,10 @@ In the most cases you don't need to use `Model` or `Cycle` classes directly. The
 `Binding#to(object, property, [options])`
 
 Pass the object/property you want to bind to.
+
 Options:
   - `transform` returned value will be applied, gets a value as a param
-  - `changed` callback with new value as a param
+  - `changed` callback with new value (after transformation) as a param
 
 [See example](./examples/transform/app.js)
 

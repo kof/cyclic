@@ -28,5 +28,8 @@
             }
         })
 
-    setInterval(cyclic.run, 10)
+    ;(function run() {
+        cyclic.run()
+        requestAnimationFrame(run)
+    }())
 }())
