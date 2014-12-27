@@ -45,6 +45,19 @@ test('transform fn', function () {
     equal(obj2.value, 3, 'obj1.value == 3')
 })
 
+test('same object, different props', function () {
+    var obj = {}
+    cyclic.bind(obj, 'a').to(obj, 'b')
+    equal(obj.a, undefined, 'initial value')
+    equal(obj.b, undefined, 'initial value')
+    cyclic.run()
+    obj.a = 1
+    cyclic.run()
+    cyclic.run()
+    equal(obj.a, 1, 'a is 1')
+    equal(obj.b, 1, 'b is 1')
+})
+
 test('obj1.a->obj2.b change a', function () {
     var obj1 = {}
     var obj2 = {}

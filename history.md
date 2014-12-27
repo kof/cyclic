@@ -1,3 +1,7 @@
+## 0.2.1 / 2014-12-28
+
+- fix a bug when binding different properties on the same object
+
 ## 0.2.0 / 2014-12-27
 
 - new higher level binding api on top of Model

@@ -49,6 +49,7 @@ Binding.create = function (cycle, object, prop) {
     var objectIndex = objects.indexOf(object)
     var binding
 
+    // Check if we have already a binding for this object.prop.
     if (objectIndex >= 0) {
         binding = bindingsMap[objectIndex][prop]
     }
@@ -56,6 +57,7 @@ Binding.create = function (cycle, object, prop) {
     if (binding) return binding
 
     var model
+    // Check if we have already a model for this object.
     if (objectIndex >= 0) {
         model = modelsMap[objectIndex]
     }
@@ -69,11 +71,12 @@ Binding.create = function (cycle, object, prop) {
         model = new Model()
         modelsMap[objectIndex] = model
         cycle.add(model)
-        Binding.defineProperty(object, prop, model)
     }
 
     binding = new Binding(cycle, model, prop)
-    bindingsMap[objectIndex] = binding
+    if (!bindingsMap[objectIndex]) bindingsMap[objectIndex] = {}
+    bindingsMap[objectIndex][prop] = binding
+    Binding.defineProperty(object, prop, model)
 
     return binding
 }
@@ -88,7 +91,7 @@ Binding.create = function (cycle, object, prop) {
  */
 Binding.defineProperty = function (object, prop, model) {
     // Don't loose the value if already defined.
-    model.set(prop, object[prop])
+    if (object[prop] != null) model.set(prop, object[prop])
     Object.defineProperty(object, prop, {
         enumerable: true,
         get: function () {
@@ -120,7 +123,7 @@ Binding.prototype.to = function (object, prop, options) {
         if (options.transform) value = options.transform(value)
         binding.model.set(prop, value)
         if (options.changed) options.changed(value)
-    })
+    }.bind(this))
 
     return binding
 }
@@ -273,14 +276,15 @@ Model.prototype.toJSON = function () {
  * @api private
  */
 Model.prototype.apply = function () {
-    for (var name in this.changed) {
-        var value = this.changed[name]
+    var changed = this.changed
+    this.changed = {}
+    this.isDirty = false
+
+    for (var name in changed) {
+        var value = changed[name]
         this.object[name] = value
         this.emit('change:' + name, value, this)
     }
-
-    this.changed = {}
-    this.isDirty = false
 
     return this
 }

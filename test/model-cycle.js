@@ -67,3 +67,35 @@ test('model1.a->model2.a->model1.a', function () {
     equal(model1.get('a'), 2, 'model2>model1 a1 is correct')
     equal(model2.get('a'), 2, 'model2>model1 a2 is correct')
 })
+
+test('model.a->model.b->model.a', function () {
+    var model = new cyclic.Model()
+
+    model.on('change:a', function (value) {
+        model.set('b', value)
+    })
+
+    model.on('change:b', function (value) {
+        model.set('a', value)
+    })
+
+    var cycle = new cyclic.Cycle()
+    cycle.add(model)
+
+    equal(model.get('a'), undefined, 'default value is correct')
+    equal(model.get('b'), undefined, 'default value is correct')
+
+    model.set('a', 1)
+    cycle.run()
+    cycle.run()
+
+    equal(model.get('a'), 1, 'model.a>model.b a is correct')
+    equal(model.get('b'), 1, 'model.a>model.b b is correct')
+
+    model.set('b', 2)
+    cycle.run()
+    cycle.run()
+
+    equal(model.get('a'), 2, 'model.b>model.a a is correct')
+    equal(model.get('b'), 2, 'model.b>model.a b is correct')
+})

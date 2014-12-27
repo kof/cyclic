@@ -1,7 +1,7 @@
 {
   "name": "cyclic",
   "description": "Cyclic is an api for creating single or bidirectional bindings between any kind of objects.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": {
     "name": "Oleg Slobodskoi",
     "email": "oleg008@gmail.com"
