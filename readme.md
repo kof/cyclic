@@ -25,9 +25,13 @@ cyclic.bind(object1, 'a').to(object2, 'a').to(object1, 'a')
 
 object1.a = 2
 
-// Both models are in sync.
-object1.a // 2
-object2.a // 2
+// Property synchronization happens after cyclic.run() call.
+setTimeout(function () {
+    // Both models are in sync.
+    object1.a // 2
+    object2.a // 2
+}, 20)
+
 ```
 
 ## API
